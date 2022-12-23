@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+    <div class="login-page">
+  <div class="form">
+    <h1>Enter the OTP</h1>
+    <h3>Check your email for OTP</h3>
+    <!-- <form class="register-form">
+      <input type="text" placeholder="name"/>
+      <input type="password" placeholder="password"/>
+      <input type="text" placeholder="email address"/>
+      <button>create</button>
+      <p class="message">Already registered? <a href="#">Sign In</a></p>
+    </form> -->
+    <form class="login-form" action="/verifyotp" method="post">
+      <input type="text" placeholder="OTP" name="otp"/>
+      <button type="submit">Submit</button>
+      <% if(otperr){%> 
+        <p class="" style="color:red ;">Incorrect otp</p>
+        <%} %>
+    </form>
+    <form action="/resendotp" method="post">
+      <div style="align-items:center ; width: 100%;">
+        <p class="message">Didn't get OTP</p>
+        <button type="submit">Resend</button>
+      </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>
