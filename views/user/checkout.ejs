@@ -218,7 +218,7 @@
                                             <span class="mtext-110 cl2">₹ </span>
                                         </div>
                             </div>
-                            <form action="/orderbutton/<%=cartDetail._id%>" method="post" id="checkout-form">
+                            <form action="/orderbutton/<%=cartDetail._id%>" method="post">
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="paymentMethod" id="paynow"
                                         value="Razorpay" checked>
@@ -264,6 +264,7 @@
 <script>
 
 $("#checkout-form").submit((e) => {
+    console.log('hhhhhh');
     let razorpayoderData;
     let userOrderData;
     e.preventDefault();

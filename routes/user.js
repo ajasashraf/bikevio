@@ -30,4 +30,7 @@ router.post('/remove/cart/:proId',sessionController.userSession,userController.r
 router.post('/newAddress',sessionController.userSession,userController.newAddress)
 router.post('/applycoupon',userController.applyCoupon)
 
+router.get('/profilePage',userController.profilePage);
+router.get('/viewOrders',userController.viewOrders)
+
 module.exports=router;

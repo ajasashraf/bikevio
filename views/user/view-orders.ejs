@@ -1,0 +1,134 @@
+<%-include('../user/layout/user-header-layout')-%>
+
+<section class="cart_area mt-5">
+  <div class="container">
+    <h2>My Orders</h2>
+    <div class="cart_inner">
+      <div class="table-responsive">
+        <% if(Orders.length>0) { %>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Order ID</th>
+              <th scope="col">Date</th>
+              <th scope="col">Amount</th>
+              <th scope="col">Status</th>
+              <th scope="col">View</th>
+              <th scope="col">Track</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (Order of Orders) { %>
+
+            <tr>
+              <td>
+                <p><%=Order._id%></p>
+              </td>
+              <td>
+                <p><%=Order.createdAt.toLocaleDateString()%></p>
+              </td>
+              <td>
+                <p>Rs.<span><%=Order.totalAmount%></span></p>
+              </td>
+              <td>
+                <% if (Order.orderStatus=="Cancellede") { %>
+                <p><span style="color: red"><%=Order.orderStatus%></span></p>
+
+                <% }else {%>
+                <p><span style="color: green"><%=Order.orderStatus%></span></p>
+
+                <% } %>
+              </td>
+              <td>
+                <a
+                  href="/orderSummary/?id=<%=Order._id%>"
+                  class="btn btn-warning"
+                  >View</a
+                >
+              </td>
+
+              <td>
+                <a
+                  href="/ordertracking/?id=<%=Order.id%>"
+                  class="btn btn-warning"
+                >
+                  TrackOrder
+                </a>
+              </td>
+            </tr>
+            <tr></tr>
+            <% } %>
+          </tbody>
+        </table>
+
+        <hr />
+        <% }else{ %>
+
+        <!-- ============= -->
+        <div class="container">
+          <div class="row text-center">
+            <div class="col-md-12 mt-5">
+              <div>
+                <img
+                  src="/images/productImages/678caef6068a976e4a0d94bbdba6b660.webp"
+                  alt=""
+                  width="50%"
+                />
+                <p style="color: red">No Order yet</p>
+              </div>
+              <div>
+                <a class="btn btn-success my-3" href="/">Start Shopping</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Button trigger modal -->
+<button
+  type="button"
+  class="btn btn-primary"
+  data-bs-toggle="modal"
+  data-bs-target="#staticBackdrop"
+>
+  Launch static backdrop modal
+</button>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="staticBackdrop"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="staticBackdropLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">...</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button type="button" class="btn btn-primary">Understood</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%-include('../user/layout/user-footer-layout')-%>

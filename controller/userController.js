@@ -80,13 +80,11 @@ module.exports = {
     let products = await productModel.find().limit(4);
     res.render("user/user", { loggedIn, products });
     let user = await userModel.findOne({ userId: userId });
-    console.log(user.address,'useruser');
     //    let cartDetails=await cartModel.findOne({userId}).populate('products.productId')
     //    console.log(cartDetails,'cartDetailscartDetails');
     const cart = await cartModel
       .findOne({ userId })
       .populate("products.productId");
-    console.log(cart?.products[0].productId, "hhhhhhhh");
     let bikeName = cart?.products[0].productId.bikeName;
     let price = cart?.products[0].productId.price;
     let description = cart?.products[0].productId.description;
@@ -144,7 +142,6 @@ module.exports = {
   },
   cart: async (req, res) => {
     const userId = req.session.userId;
-    console.log(userId, "cartttttttttttttttttttttttttttttt");
     const cart = await cartModel
       .findOne({ userId })
       .populate("products.productId");
@@ -279,6 +276,7 @@ module.exports = {
   },
 
   orderbutton: async (req, res) => {
+    console.log('jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj');
     console.log(req.body), "ajajajajaj";
     let cartId = req.params.cartId;
 
@@ -291,7 +289,6 @@ module.exports = {
     const cart = await cartModel
       .findOne({ userId })
       .populate("products.productId");
-    console.log(cart?.products[0].productId, "hhhhhhhh");
     let vehicleId = cart?.products[0].productId._id;
     let bikeName = cart?.products[0].productId.bikeName;
     var price = cart?.products[0].productId.price;
@@ -312,12 +309,50 @@ module.exports = {
         orderStatus: "Order confirmed",
         totalAmount: price,
       });
-      newOrder.save().then((res) => {
+      newOrder.save().then((re) => {
         console.log('response');
-        console.log(res, "re");
+        console.log(re, "re");
+        res.redirect('/')
       });
 
       console.log("paymentMethod==");
     }
+  },
+  profilePage:(req,res)=>{
+    let loggedIn = req.session.loggedIn;
+    res.render('user/profile',{loggedIn})
+
+  },
+  // viewOrders:(req,res)=>{
+  //   let loggedIn = req.session.loggedIn;
+  //   res.render('user/view-orders',{loggedIn})
+
+  // }
+
+  viewOrders: async (req, res) => {
+    // let user = req.session.user;
+    // console.log(user, "user");
+    // res.render("user/view-orders", { login: true, user });
+   
+
+    try {
+      let loggedIn = req.session.loggedIn;
+  
+          
+          let result = await orderModel
+            .find({ userId: req.session.userId })
+            .sort({ createdAt: -1 });
+          console.log(result, "resultresultresult");
+          // let result =await orderModel.find()
+          res.render("user/view-orders", {
+            loggedIn,
+            Orders: result,
+          });
+        } catch (err) {
+          res.use((req, res) => {
+            res.status(429).render("admin/error-429");
+          });
+        }
+
   },
 };

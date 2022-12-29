@@ -1,0 +1,113 @@
+<style>
+    .blog_right_sidebar {
+      border: 1px solid #eeeeee;
+      background: #fafaff;
+      padding: 30px;
+    }
+    .blog_right_sidebar .author_widget {
+      text-align: center;
+    }
+    .blog_right_sidebar .author_widget h4 {
+      font-size: 18px;
+      line-height: 20px;
+      color: #222222;
+      margin-bottom: 5px;
+      margin-top: 30px;
+    }
+    .blog_right_sidebar .author_widget p {
+      margin-bottom: 0px;
+    }
+    .blog_right_sidebar .author_widget .social_icon {
+      padding: 7px 0px 15px;
+    }
+    .blog_right_sidebar .author_widget .social_icon a {
+      font-size: 14px;
+      color: #222222;
+      transition: all 0.2s linear;
+    }
+    .blog_right_sidebar .author_widget .social_icon a + a {
+      margin-left: 20px;
+    }
+    .blog_right_sidebar .author_widget .social_icon a:hover {
+      color: #c5322d;
+    }
+    .rounded-circle {
+      border-radius: 50% !important;
+    }
+    .button-group-area .genric-btn {
+      margin-right: 10px;
+      margin-top: 10px;
+    }
+    .button-group-area .genric-btn:last-child {
+      margin-right: 0;
+    }
+  
+    .genric-btn {
+      display: inline-block;
+      outline: none;
+      line-height: 40px;
+      padding: 0 30px;
+      font-size: 0.8em;
+      text-align: center;
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+      -webkit-transition: all 0.3s ease 0s;
+      -moz-transition: all 0.3s ease 0s;
+      -o-transition: all 0.3s ease 0s;
+      transition: all 0.3s ease 0s;
+    }
+  </style>
+ <%-include('../user/layout/user-header-layout')-%>
+  
+  <div class="container mt-5 pt-5">
+    <div class="row">
+      <div class="col-lg-4">
+        <h2 class="mt-5 mb-5">My Profile</h2>
+        <div class="blog_right_sidebar">
+          <aside class="single_sidebar_widget author_widget">
+            <img
+              class="author_img rounded-circle w-25"
+              src="https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/user-profile-icon.png"
+              alt=""
+            />
+            <h4>Ajas</h4>
+            <div class="mt-4 mb-4">
+              <a href="/viewOrders" class="genric-btn primary w-50 m-1"
+                >My Orders</a
+              ><br />
+            </div>
+
+          </aside>
+        </div>
+      </div>
+     <!-- <p>Address!!</p>
+      <div class="col-lg-8">
+        <h2 class="mt-5 mb-5">My Addresses</h2>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="card">
+              <a href="/addAddress" class="btn btn-primary">Add New</a>
+            </div>
+          </div>
+        </div>
+      </div> -->
+      <!-- <div class="row mt-2 mb-2" id="myAddress">
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="d-flex align-items-center">My address</h5>
+             
+            </div>
+          </div>
+        </div>
+      </div> -->
+    </div>
+  </div>
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+    crossorigin="anonymous"
+  ></script>
+  <%-include('../user/layout/user-footer-layout')-%>	
+  
