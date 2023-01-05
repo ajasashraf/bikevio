@@ -1,0 +1,47 @@
+<%-include('../user/layout/user-header-layout')-%>
+<br>
+<br>
+<section class="vh-100 mt-5" style="background-color: #f4f5f7;">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col col-lg-6 mb-4 mb-lg-0">
+          <div class="card mb-3" style="border-radius: .5rem;">
+            <div class="row g-0">
+              <div class="col-md-4 gradient-custom text-center text-white"
+                style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
+                
+                  <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                  alt="Avatar" class="img-fluid mt-5" style="width: 80px; height: 80px;" />  
+                  <div class="col-6 mb-3 ml-5">
+                    <p class="text-muted"><%=userName%></p>
+                  </div>
+              </div>
+              <div class="col-md-8">
+                <div class="card-body p-4">
+                  <h6>Information</h6>
+                  <hr class="mt-0 mb-4">
+                  <div class="row pt-1">
+                    <div class="col-6 mb-3">
+                      <h6>Email</h6>
+                      <p class="text-muted"><%=userDetails.email%></p>
+                    </div>
+                    <div class="col-6 mb-3">
+                      <h6>Phone</h6>
+                      <p class="text-muted"><%=userDetails.phone%></p>
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="d-flex justify-content-start">
+                    <a href="/editProfile" class="btn btn-info mr-5" style="font-size: 12px;">Edit Profile</a>
+                    <a href="/logout" class="btn btn-danger ml-5" style="font-size: 12px;">Log Out</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%-include('../user/layout/user-footer-layout')-%>

@@ -1,0 +1,62 @@
+<%-include('../admin/layout/admin-header-layout')-%>
+
+
+
+<div class="container-fluid pt-4 px-4">
+                
+    <div class="row ">
+        <div class="col-sm-12 col-xl-12">
+            <div class="bg-dark rounded h-100 p-4">
+                <h6 class="mb-4">Orders</h6>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Order Id</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Payment Mode</th>
+                            <th scope="col">Payment Status</th>
+                            <th scope="col">Order Status</th>
+                        </tr>
+                        
+                            
+                        
+                    </thead>
+                    <tbody>
+                       <% order.forEach(function(order){%>
+                            <tr>
+                                <th scope="row"><%=order._id%></th>
+                                <td><%=order.vehicles[0].bikeName%></td>
+                                <td><%=order.totalAmount%></td>
+                                <td><%=order.paymentMethod%></td>
+                                <td><%=order.paymentStatus%></td>
+                                <td><%=order.orderStatus%></td>
+                               
+                            </tr>
+                        <%})%>    
+                      
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Table End -->
+
+</div>
+
+
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../admin-panel/lib/chart/chart.min.js"></script>
+<script src="../admin-panel/lib/easing/easing.min.js"></script>
+<script src="../admin-panel/lib/waypoints/waypoints.min.js"></script>
+<script src="../admin-panel/lib/owlcarousel/owl.carousel.min.js"></script>
+<script src="../admin-panel/lib/tempusdominus/js/moment.min.js"></script>
+<script src="../admin-panel/lib/tempusdominus/js/moment-timezone.min.js"></script>
+<script src="../admin-panel/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+<!-- Template Javascript -->
+<script src="../admin-panel/js/main.js"></script>

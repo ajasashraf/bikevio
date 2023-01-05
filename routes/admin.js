@@ -30,4 +30,6 @@ router.post('/deleteproduct/:id',adminController.deleteProduct)
 router.post('/editproduct/:id',fileUplod.uploadImages,fileUplod.resizeImages,adminController.updateProduct)
 router.post('/addcoupon',adminController.addCoupon)
 router.post('/deletecoupon/:id',adminController.deleteCoupon)
+// 
+router.get('/admin-orders',adminController.adminOrder)
 module.exports=router;

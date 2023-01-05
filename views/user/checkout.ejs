@@ -261,76 +261,8 @@
         })
     }
 </script>
-<script>
 
-$("#checkout-form").submit((e) => {
-    console.log('hhhhhh');
-    let razorpayoderData;
-    let userOrderData;
-    e.preventDefault();
-    $.ajax({
-      url: "/checkout/<%= cartDetail._id %>",
-      method: "post",
-      data: $("#checkout-form").serialize(),
-      success: (response) => {
-        console.log(response, "responseresponseresponse");
-        if (response.cashOnDelivery) {
-          Swal.fire({
-            title: "Are you sure?",
-            text: "Are you sure to order this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, oder it!",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              Swal.fire("Odered!", "Thank you for ordered.", "success");
-              location.href = "/";
-            }
-          });
-        } else if (response.onlinePayment) {
-          console.log(response, "responseresponseonline");
-          console.log("test ooooooooooooooooooooooooook");
-          razorpayoderData = response.razorpayOrderData;
-          userOrderData = response.userOrderData;
-          var options = {
-            key: "rzp_test_NMcDXbybMYWLne", // Enter the Key ID generated from the Dashboard
-            amount: response.razorpayOrderData.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-            currency: "INR",
-            name: " Meta Hyprt mart",
-            description: "Test Transaction",
-            image: "https://example.com/your_logo",
-            order_id: response.razorpayOrderData.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-            handler: function (response) {
-              console.log(response, "????????????????????????????????????????");
+<script src="/javascripts/user/payment/jQuery.js"></script>
 
-              verifyPayment(response, razorpayoderData, userOrderData);
-            },
-            prefill: {
-              name: "Muhammed Ajnas",
-              email: "gaurav.kumar@example.com",
-              contact: "9999999999",
-            },
-            notes: {
-              address: "Razorpay Corporate Office",
-            },
-            theme: {
-              color: "#3399cc",
-            },
-          };
-
-          var rzpl = new Razorpay(options);
-
-          rzpl.on("payment.failed", function (response) {
-            paymentFailed(response, userOrderData);
-          });
-          rzpl.open();
-        }
-      },
-    });
-  });
-
-</script>
 
 <%-include('../user/layout/user-footer-layout')-%>

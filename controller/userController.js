@@ -9,7 +9,10 @@ const userModel = require("../Model/userModel");
 const user = require("../middlewares/sessionController");
 const couponModel = require("../Model/coupon");
 const orderModel = require("../Model/orderModel");
+const wishlistModel=require("../Model/wishlistModel");
+const Razorpay=require('razorpay');
 const { response } = require("express");
+const { default: mongoose } = require("mongoose");
 
 module.exports = {
   signUP: (req, res) => {
@@ -79,26 +82,16 @@ module.exports = {
     const userId = req.session.userId;
     let products = await productModel.find().limit(4);
     res.render("user/user", { loggedIn, products });
-    let user = await userModel.findOne({ userId: userId });
-    //    let cartDetails=await cartModel.findOne({userId}).populate('products.productId')
-    //    console.log(cartDetails,'cartDetailscartDetails');
-    const cart = await cartModel
-      .findOne({ userId })
-      .populate("products.productId");
-    let bikeName = cart?.products[0].productId.bikeName;
-    let price = cart?.products[0].productId.price;
-    let description = cart?.products[0].productId.description;
 
-    //     const cartDetails=await cartModel.find({userId:userId}).populate('products.productId').exec()
-    //    const cartDetail= cartDetails[0]
-    //    console.log(cartDetail);
-    //    console.log(cartDetail._id,'cartDetaiddddddddddddddls');
+
+
   },
   productDetails: async (req, res) => {
+    const user=req.session.userId
     const productId = req.params.id;
     let loggedIn = req.session.loggedIn ? true : false;
     const products = await productModel.findOne({ _id: productId });
-    res.render("user/product-details", { products, loggedIn });
+    res.render("user/product-details", { products, loggedIn, user });
   },
   add_to_cart: async (req, res) => {
     const productId = req.body.productId.trim();
@@ -222,11 +215,6 @@ module.exports = {
       res.redirect("/user");
     }
   },
-  userProfile: (req, res) => {
-    let loggedIn = req.session.loggedIn;
-
-    res.render("user/address", { loggedIn });
-  },
   checkOut: async (req, res) => {
     let loggedIn = req.session.loggedIn ? true : false;
     const userId = req.session.userId;
@@ -247,10 +235,14 @@ module.exports = {
     });
   },
   newAddress: async (req, res) => {
+   
+
     const userId = req.session.userId;
-    let userModel = await userModel.findById({ _id: userId });
+   
+    let user = await userModel.findById({ _id: userId });
+    console.log(user,'useruser');
     try {
-      userModel.address.unshift({
+      user.address.unshift({
         fullName: req.body.fullName,
         mobNumber: req.body.phoneNumber,
         homeaddress: req.body.address,
@@ -258,7 +250,7 @@ module.exports = {
         state: req.body.state,
         pincode: req.body.pincode,
       });
-      userModel.save().then(() => {
+      user.save().then(() => {
         res.redirect("/checkout");
       });
     } catch {
@@ -276,11 +268,10 @@ module.exports = {
   },
 
   orderbutton: async (req, res) => {
-    console.log('jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj');
-    console.log(req.body), "ajajajajaj";
+    
     let cartId = req.params.cartId;
-
-    console.log("ajjajjjja");
+    let loggedIn = req.session.loggedIn;
+    
     const userId = req.session.userId;
     console.log(req.body, "body from checkout");
 
@@ -312,10 +303,34 @@ module.exports = {
       newOrder.save().then((re) => {
         console.log('response');
         console.log(re, "re");
-        res.redirect('/')
+        cartModel.findOneAndRemove({userId:userId}).then((re)=>{
+          console.log(re,'ajajajaj');
+        })
       });
+      cartModel.findOneAndRemove({userId:userId}).then((re)=>{
+        console.log(re,'ajajajaj');
+        res.render('user/orderSuccess',{loggedIn});
+
+      })
 
       console.log("paymentMethod==");
+    }
+    else{
+
+      var instance = new Razorpay({
+        key_id:'rzp_test_uizcWUjK0kfQb4',
+        key_secret:'OOzYSdhYk53vstYLMn0yxucF',
+      })
+
+      var options = {
+        amount: 10000 , // amount in the smallest currency unit
+        currency: "INR",
+        receipt: "ajas",
+    };
+    instance.orders.create(options, function (err, order) {
+      
+        res.json({ order, userOrder, User });
+    });
     }
   },
   profilePage:(req,res)=>{
@@ -323,18 +338,9 @@ module.exports = {
     res.render('user/profile',{loggedIn})
 
   },
-  // viewOrders:(req,res)=>{
-  //   let loggedIn = req.session.loggedIn;
-  //   res.render('user/view-orders',{loggedIn})
 
-  // }
 
   viewOrders: async (req, res) => {
-    // let user = req.session.user;
-    // console.log(user, "user");
-    // res.render("user/view-orders", { login: true, user });
-   
-
     try {
       let loggedIn = req.session.loggedIn;
   
@@ -355,4 +361,136 @@ module.exports = {
         }
 
   },
+
+  viewOrderDetails:async(req,res)=>{
+    let loggedIn = req.session.loggedIn;
+    let id =req.query.id;
+    let order=await orderModel.findById(id)
+    res.render('user/orderSummery',{loggedIn,id:order})
+    
+    // const order=await orderModel,find()
+  },
+  cancelOrder:async(req,res)=>{
+    let id=req.query.id
+    console.log(id,'ididv');
+    let order=await orderModel.findByIdAndUpdate(id,{orderStatus:"cancelled"}).then((re)=>{
+      console.log(re,'kkkkk');
+    })
+  }, 
+  addtoWishlist: async (req, res) => {
+    console.log('ajnasssssssssssssssssss');
+    try {
+      let userId = req.session.userId;
+      console.log(userId,'userIduserIduserId');
+      console.log(req.body,'bodyyyyyyyyyyyyyyyyyyyyys q');
+      let name = req.body.name;
+      let ProductId = req.params.prodId;
+      console.log(ProductId);
+      let list = await wishlistModel.findOne({ userId: userId });
+      console.log(list, "list");
+      if (list) {
+        let itemIndex = list.myWishlist.findIndex(
+          (p) => p.ProductId == ProductId
+        );
+        if (itemIndex > -1) {
+          // list.myWishlist.splice(itemIndex, 1);
+        } else {
+          list.myWishlist.push({ ProductId, name });
+        }
+        await list.save();
+        res.json({exist:true})
+      } else {
+        list = new wishlistModel({
+          userId: userId,
+          myWishlist: [{ ProductId, name }],
+        });
+        await list.save();
+        res.json({status:true})
+        res.redirect("/");
+
+        console.log("wishlist first added");
+      }
+    } catch (error) {
+      console.log(error.message, "error from wishlist");
+    }
+  },
+  wishlist: async (req, res) => {
+    let loggedIn = req.session.loggedIn;
+    console.log(loggedIn,'loggedIn');
+   
+    try {
+      let userId = req.session.userId;
+      console.log(userId,'userIduserIduserId');
+      const wishView = await wishlistModel
+        .findOne({ userId })
+        .populate("myWishlist.ProductId")
+        .exec();
+        console.log(wishView,'wishViewwishView');
+      if (wishView) {
+        req.session.wishNum = wishView.myWishlist.length;
+      }
+      wishNum = req.session.wishNum;
+      console.log(wishView, "wishView");
+
+      cartNum = req.session.cartNum;
+      res.render("user/wishlist", {
+        loggedIn,
+        wishNum,
+        wishProducts: wishView,
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  },
+  removeWishlist: async (req, res) => {
+    let userWishlist = await wishlistModel.findOne({
+      userId: req.session.userId,
+    });
+    let wishlistIndex = userWishlist.myWishlist.findIndex(
+      (prod) => (prod._id = req.params.wishId)
+    );
+    if (wishlistIndex != null) {
+      userWishlist.myWishlist.splice(wishlistIndex, 1);
+      await userWishlist.save();
+      res.redirect("/wishlist");
+    } else {
+      res.redirect("/");
+    }
+  },
+  userProfile:async(req,res)=>{
+    let loggedIn = req.session.loggedIn;
+    let userId=req.session.userId
+    let userDetails =await userModel.findOne({_id:userId})
+    let userName=userDetails.name.toUpperCase()
+    res.render('user/user-profile',{userDetails,userName,loggedIn})
+},
+editProfilePage:async(req,res)=>{
+  let loggedIn = req.session.loggedIn;
+  let userId = req.session.userId
+  let userDetails = await userModel.findOne({_id:userId})
+  res.render('user/edit-profile',{userDetails,err:false,success:false,loggedIn})
+},
+editProfile:(req,res)=>{
+  let data = req.body
+  let userId=req.session.userId
+  userHelpers.editUser(data,userId).then(()=>{
+      res.redirect('/editProfile')
+  })
+},
+resetPass:(req,res)=>{
+  let loggedIn = req.session.loggedIn;
+  let userId= req.session.userId
+  let data=req.body
+  userHelpers.resetPass(userId,data).then(async(response)=>{
+   let userDetails = await userModel.findOne({_id:userId})
+       if(response.status){
+           res.render('user/edit-profile',{err:false,success:true,userDetails,loggedIn})
+       }else{
+           res.render('user/edit-profile',{err:true,success:false,userDetails,loggedIn})
+       }
+  })
+ },
+ 
+
+
 };

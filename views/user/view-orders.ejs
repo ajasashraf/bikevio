@@ -1,6 +1,6 @@
 <%-include('../user/layout/user-header-layout')-%>
 
-<section class="cart_area mt-5">
+<section class="cart_area" style="margin-top: 80px;">
   <div class="container">
     <h2>My Orders</h2>
     <div class="cart_inner">
@@ -15,7 +15,7 @@
               <th scope="col">Amount</th>
               <th scope="col">Status</th>
               <th scope="col">View</th>
-              <th scope="col">Track</th>
+            
             </tr>
           </thead>
           <tbody>
@@ -43,19 +43,12 @@
               <td>
                 <a
                   href="/orderSummary/?id=<%=Order._id%>"
-                  class="btn btn-warning"
+                  class="btn btn-primary"
                   >View</a
                 >
               </td>
 
-              <td>
-                <a
-                  href="/ordertracking/?id=<%=Order.id%>"
-                  class="btn btn-warning"
-                >
-                  TrackOrder
-                </a>
-              </td>
+             
             </tr>
             <tr></tr>
             <% } %>
@@ -90,14 +83,7 @@
 </section>
 
 <!-- Button trigger modal -->
-<button
-  type="button"
-  class="btn btn-primary"
-  data-bs-toggle="modal"
-  data-bs-target="#staticBackdrop"
->
-  Launch static backdrop modal
-</button>
+
 
 <!-- Modal -->
 <div

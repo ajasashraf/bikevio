@@ -174,5 +174,36 @@ module.exports = {
             }
 
         })
-    }
+    },
+    editUser:(data,userId)=>{
+        return new Promise(async(resolve,reject)=>{
+
+            if(data.name){
+                await user.findOneAndUpdate({_id:userId},{$set:{name:data.name}})
+            }if(data.phone){
+                await user.findOneAndUpdate({_id:userId},{$set:{phone:data.phone}})
+            }
+            resolve()
+        })
+    },
+    resetPass:(id,data)=>{
+        return new Promise(async(resolve,reject)=>{
+            let response={}
+            let userLogged =await user.findOne({_id:id})
+            await bcrypt.compare(data.oldPass,userLogged.password).then(async(status) =>{
+                if(status){                
+                        let newPassword= await bcrypt.hash(data.newPass, 10)
+                        await user.findOneAndUpdate({_id:id},{$set:{password:newPassword}}).then(()=>{
+                            response.status=true
+                            resolve(response)
+                        }) 
+                }else{
+                    response.status=false
+                    resolve(response)
+                }
+            
+            })
+      
+        })
+      },
 }

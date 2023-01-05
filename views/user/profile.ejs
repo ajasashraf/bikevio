@@ -58,7 +58,7 @@
       transition: all 0.3s ease 0s;
     }
   </style>
- <%-include('../user/layout/user-header-layout')-%>
+<%-include('../user/layout/user-header-layout')-%>
   
   <div class="container mt-5 pt-5">
     <div class="row">
@@ -73,9 +73,12 @@
             />
             <h4>Ajas</h4>
             <div class="mt-4 mb-4">
-              <a href="/viewOrders" class="genric-btn primary w-50 m-1"
-                >My Orders</a
-              ><br />
+              <a href="/profile" class="genric-btn primary w-50 m-1">Profile</a>
+              <br>
+              <a href="/viewOrders" class="genric-btn primary w-50 m-1">My Orders</a>
+                <br> 
+              <a href="/wishlist" class="genric-btn primary w-50 m-1">Wishlist</a>
+              <br>
             </div>
 
           </aside>
@@ -107,7 +110,6 @@
   <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
-    crossorigin="anonymous"
-  ></script>
+    crossorigin="anonymous"></script>
   <%-include('../user/layout/user-footer-layout')-%>	
   
