@@ -51,6 +51,8 @@ module.exports={
             let newCoupon= new coupon({
                 name:data.name,
                 discount:data.discount,
+                startDate:data.startDate,
+                expiryDate:data.expiryDate
             })
             await newCoupon.save()
             response.status=true

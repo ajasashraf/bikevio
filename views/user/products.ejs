@@ -103,16 +103,17 @@
 							<span class="stext-105 cl3">
 								<%=products.price%>
 							</span>
+							
 						</div>
 
-						<div class="block2-txt-child2 flex-r p-t-3">
+						<!-- <div class="block2-txt-child2 flex-r p-t-3">
 							<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
 								<img class="icon-heart1 dis-block trans-04"
 									src="../homepage/images/icons/icon-heart-01.png" alt="ICON">
 								<img class="icon-heart2 dis-block trans-04 ab-t-l"
 									src="../homepage/images/icons/icon-heart-02.png" alt="ICON">
 							</a>
-						</div>
+						</div> -->
 					</div>
 				</div>
 	</div>
@@ -120,6 +121,24 @@
 	<%})%>
 	
 </div>
+<div class="container">
+	<section class="d-flex justify-content-center mt-2">
+		<% if(hasPreviousPage){ %>
+		  <a style="text-decoration: none;padding: .5rem; margin:0 1rem; color:rgb(0, 0, 0)" class="text-center"
+			href="/product?page=<%= PreviousPage %>"><i class="fa fa-chevron-left"
+			  aria-hidden="true"></i>&nbsp; Previous</a>
+		  <% } %>
+			<a style="text-decoration: none;padding: .5rem; margin:0 1rem; color:rgb(0, 0, 0); border: 2px solid rgb(0, 0, 0); border-radius: 50px;"
+			  href="/product?page=<%= page %>">
+			  <%= page %>
+			</a>
+			<% if(hasNextPage) { %>
+			  <a style="text-decoration: none;padding: .5rem; margin:0 1rem; color:rgb(0, 0, 0);"
+				href="/product?page=<%=  page+1 %>">Next &nbsp; <i class="fa fa-chevron-right"
+				  aria-hidden="true"></i></a>
+			  <% } %>
+	  </section>
+	</div>
 
 		<!-- Load more -->
 		<!-- <div class="flex-c-m flex-w w-full p-t-45">

@@ -182,7 +182,7 @@
 
                                 <div class="size-209 p-t-1 p-b-5 d-flex justify-content-end">
                                     <span class="mtext-110 cl2">
-                                        10000
+                                        <%= bookingAmount %>
                                     </span>
                                 </div>
                                     <div class="size-208 p-b-5">
@@ -198,27 +198,44 @@
                                      
                                         <div class="size-208 p-b-10 m-t-10 bor12">
     
-                                        <select name="coupon" id="coupon" style="width: 200px; height: 30px;">
-                                            <%coupons.forEach(function(coupon){%> 
-                                            <option value="<%=coupon._id%>"><%=coupon.name%></option>
-                                            <%})%>
-                                        </select>  
+                                        <form  id="verify-coupon" style="width: 200px; height: 30px;">
+                                            <% if(applayCoupon){ %>
+                                                <input type="text" placeholder="Apply Coupon"  name="coupon" value="<%=usedCoupon.code%>">  
+                                        
+                                            </div>
+    
+                                            <div class="size-209 bor12 p-b-10 m-t-10 d-flex justify-content-end">
+                                                <button  class="p-1 rounded"
+                                                    style="border: 1px solid; border-color: rgb(255, 9, 9); width: 60px;">Cancel</button>
+                                            </div>
+                                                <% } else{ %>
+                                                    
+                                                    <input type="text" name="coupon" placeholder="Apply Coupon" >  
+                                        
                                         </div>
 
                                         <div class="size-209 bor12 p-b-10 m-t-10 d-flex justify-content-end">
-                                            <button onclick="applyCoupon()" class="p-1 rounded"
+                                            <button class="p-1 rounded"
                                                 style="border: 1px solid; border-color: rgb(159, 159, 159); width: 60px;">Apply</button>
                                         </div>
-
-                                        <div class="size-208 mt-2 p-b-5 ">
-                                            <span class="mtext-101 cl2">Total:  </span>
-                                        </div>
-
+                                                <% } %>
+                                            
+                                    </form>
+                                    <div class="size-208 mt-2 p-b-5 ">
+                                        <span class="mtext-101 cl2">Total:  </span>
+                                    </div>
+                                   
+                                        
+                               
+                                        
                                         <div class="size-209 mt-2 p-t-1 p-b-5 d-flex justify-content-end">
-                                            <span class="mtext-110 cl2">₹ </span>
+                                            <span class="mtext-110 cl2" id="lastPrice"><%= bookingAmount %></span>
                                         </div>
+                                    
+                                     
+
                             </div>
-                            <form action="/orderbutton/<%=cartDetail._id%>" method="post">
+                            <form  id="checkout-form" novalidate="novalidate">
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="paymentMethod" id="paynow"
                                         value="Razorpay" checked>
@@ -226,12 +243,15 @@
                                         Razorpay
                                     </label>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="COD">
-                                    <label class="form-check-label" for="cod">
-                                        Cash on delivery
-                                    </label>
-                                </div>
+                                <% if(!applayCoupon){ %>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="COD">
+                                        <label class="form-check-label" for="cod">
+                                            Cash on delivery
+                                        </label>
+                                    </div>
+                                <% } %>
+                                
                                 <button  type="submit"
                                     class="btn-success flex-c-m stext-101 cl0 size-116 bor14 p-lr-15 trans-04 pointer">
                                     Place Order
@@ -243,26 +263,215 @@
             </div>
         </div>
     </div>
-<script>
-    function applyCoupon(){
-        let couponId= document.querySelector('#coupon')
-        let id = couponId.value;
-        $.ajax({
-            url:'/applycoupon?couponId='+id,
-            method:'post',
-            success:(response)=>{
-					if (response) {
-						swal("", "Coupon added !", "success");
-					} else if(response.exist) {
-						swal("Error", "Already used", "error");
-					}
-            }
-            
-        })
-    }
-</script>
 
-<script src="/javascripts/user/payment/jQuery.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    let userOrderData
+    $("#checkout-form").submit((e) => {
+      e.preventDefault();
+      console.log("vannu >>>>>>>>>>>>>>>");
+      $.ajax({
+        url: "/orderbutton/<%= cartDetail._id %>",
+        method: "post",
+        data: $("#checkout-form").serialize(),
+        success: (response) => {
+          if (response.cashOnDelivery) {
+            console.log('cash on delivery truee');
+            Swal.fire({
+              title: "Order Placed Successfully",
+              icon: "success",
+              showDenyButton: true,
+              confirmButtonText: "View Order",
+              denyButtonText: `Continue Shopping`,
+              toast: true,
+            }).then((result) => {
+              /* Read more about isConfirmed, isDenied below */
+              if (result.isConfirmed) {
+                location.href = "/viewOrders";
+              } else if (result.isDenied) {
+                location.href = "/";
+              }
+            });
+          } else if (response.onlinePayment) {
+            console.log("test ok");
+            let razorpayoderData = response.razorpayoderData;
+            userOrderData = response.userOrderData;
+            let bookingAmount=response.bookingAmount
+            var options = {
+              key: "rzp_test_uizcWUjK0kfQb4", // Enter the Key ID generated from the Dashboard
+              amount: bookingAmount*100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+              currency: "INR",
+              name: "bikevio",
+              description: "Test Transaction",
+              image: "https://example.com/your_logo",
+              order_id: response.razorpayOrderData.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+              handler: function (response) {
+                console.log(response, "????????????????????????????????????????");
+               // alert(response.razorpay_payment_id);
+                //alert(response.razorpay_order_id);
+                //alert(response.razorpay_signature);
+                verifyPayment(response, );
+              },
+              prefill: {
+                name: "Gaurav Kumar",
+                email: "gaurav.kumar@example.com",
+                contact: "9999999999",
+              },
+              notes: {
+                address: "Razorpay Corporate Office",
+              },
+              theme: {
+                color: "#3399cc",
+              },
+            };
+  
+            var rzpl = new Razorpay(options);
+  
+            rzpl.on("payment.failed", function (response) {
+              paymentFailed(response);
+            });
+            rzpl.open();
+          }
+        },
+      });
+    });
+  
+    function verifyPayment(payment,razorpayOrderData) {
+      console.log(razorpayOrderData);
+     
+      $.ajax({
+        url: "/verifyPayment",
+        data: {
+          payment,
+          razorpayOrderData,
+          userOrderData,
+        },
+        method: "post",
+        success: (response) => {
+        Swal.fire({
+              title: "Order Placed Successfully",
+              icon: "success",
+              showDenyButton: true,
+              confirmButtonText: "View Order",
+              denyButtonText: `Continue Shopping`,
+              toast: true,
+            }).then((result) => {
+              /* Read more about isConfirmed, isDenied below */
+              if (result.isConfirmed) {
+                location.href = "/viewOrders";
+              } else if (result.isDenied) {
+                location.href = "/";
+              }
+            });
+        }
+        // success: (response) => {
+        //   if (response.status) {
+        //     console.log(response,'sucessssssss');
+        //     swal("", "Order success !", "success")
+        //     location.href='/'
+        //   }
+        // },
+      });
+    }
+  
+    function paymentFailed(response) {
+      $.ajax({
+        url: "/paymentFailed",
+        data: response,
+        method: "post",
+        success: (response) => {
+          if (response.status) {
+            Swal.fire({
+              title: "Payment Failed !",
+              icon: "error",
+              showDenyButton: false,
+              toast: true,
+            }).then((result) => {
+              /* Read more about isConfirmed, isDenied below */
+              if (result.isConfirmed) {
+                location.href = "/";
+              } else if (result.isDenied) {
+                location.href = "/";
+              }
+            });
+          }
+        },
+      });
+    }
+  </script>
+
+<script>
+    $("#verify-coupon").submit((e) => {
+       e.preventDefault()
+       const total = document.getElementById('lastPrice').innerHTML
+       console.log(total,'ajaaazzzzzzzzzzzzzzzs')
+       $.ajax({
+           url: '/coupon_verify',
+           method: 'post',
+           data: $('#verify-coupon').serialize() + "&amountTotal=" + total,
+           success: (response) => {
+               if (response.success) {
+                   Swal.fire({
+                       position: 'center',
+                       icon: 'success',
+                       title: 'Received the Coupon',
+                       customClass: 'swal-wide',
+                       showConfirmButton: false,
+                       timer: 1000
+                   }).then((result)=>{
+                       location.reload()
+                   })
+               } else if (response.maxRadeem) {
+                   console.log(response.maxRadeem)
+                   Swal.fire(
+                       'Sorry!',
+                       `Maximum radeem amount is ${response.maxRadeem}`,
+                       'error'
+                   )
+               }else if (response.minCart) {
+                   console.log(response.minCart)
+                   Swal.fire(
+                       'Sorry!',
+                       `Minimum cart amount is ${response.minCart}`,
+                       'error'
+                   )
+               }else if (response.minCart) {
+                   Swal.fire(
+                       'Sorry!',
+                       'This coupon date is expired',
+                       'error'
+                   )
+               }else if (response.exist) {
+                   Swal.fire(
+                       'Sorry!',
+                       'This coupon already used',
+                       'error'
+                   )
+               }else if (response.removeCoupon) {
+                   Swal.fire({
+                       position: 'center',
+                       icon: 'success',
+                       title: 'Coupon Code Removed',
+                       customClass: 'swal-wide',
+                       showConfirmButton: false,
+                       timer: 1500
+                   }).then((result)=>{
+                       location.reload()
+                   })
+               } 
+                else{
+                   Swal.fire(
+                       'Sorry!',
+                       'This coupon Invalid',
+                       'error'
+                   )
+               }
+           }
+       })
+   })
+</script>
 
 
 <%-include('../user/layout/user-footer-layout')-%>

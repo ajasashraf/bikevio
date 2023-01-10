@@ -38,7 +38,7 @@ router.post('/orderbutton/:cartId',userController.orderbutton)
 router.post("/addtoWishlist/:prodId", sessionController.userSession,userController.addtoWishlist);
 router.post('/editProfile',sessionController.userSession,userController.editProfile)
 router.post('/editUserPass',userController.resetPass)
-
-
-
+router.post('/verifyPayment',userController.doVerifyPayment)
+router.post('/coupon_verify',userController.applyCoupon)
+router.post('/search',userController.search)
 module.exports=router;

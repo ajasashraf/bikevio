@@ -17,6 +17,17 @@ const userSchema=new mongoose.Schema({
     },
     address:{
         type:Array
+    },
+    usedCoupon:{
+        type:Array
+    },
+    bookingAmount:{
+        type:Number,
+        default:10000
+      },
+    applyCoupon:{
+        type:Boolean,
+        default:false
     }
 })
 

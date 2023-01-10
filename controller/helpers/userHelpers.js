@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const couponModel = require('../../Model/coupon');
 const cartModel = require('../../Model/cartModel');
-
+const crypto=require('crypto');
 //OTP
 var Name
 var Email
@@ -205,5 +205,28 @@ module.exports = {
             })
       
         })
+      },
+    veryfiyPayment: (detail) => {
+    let razorpayOrderDataId = detail['payment[razorpay_order_id]'];
+
+    let paymentId =detail['payment[razorpay_payment_id]'];
+
+    let paymentSignature = detail['payment[razorpay_signature]'];
+
+    let userOrderDataId = detail['userOrderData[_id]'];
+        console.log(detail,'detailsssssssss');
+        return new Promise((resolve, reject) => {
+          var hmac = crypto
+            .createHmac("sha256", "OOzYSdhYk53vstYLMn0yxucF")
+            .update(
+              `${razorpayOrderDataId +'|'+ paymentId}`
+            ).digest("hex")
+          console.log(hmac, "hmachmac");
+          if (hmac == paymentSignature) {
+            resolve();
+          } else {
+            reject();
+          }
+        });
       },
 }

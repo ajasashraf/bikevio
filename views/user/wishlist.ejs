@@ -1,5 +1,6 @@
 <%-include('../user/layout/user-header-layout')-%>
 
+<% if(wishlen>0){ %>
 <!-- Wishlist -->
 <div class="bg0 p-t-75 p-b-85 mt-5">
   <div class="container">
@@ -10,12 +11,12 @@
             <table class="table-shopping-cart">
               <tr class="table_head">
                 <th class="column-1">Product</th>
-                <th class="column-2"></th>
+                <th class="column-2"></th>  
                 <th class="column-3">Price</th>
                 <th class="column-4"></th>
                 <!-- <th class="column-4">Quantity</th> -->
               </tr>
-
+           
               <% wishProducts.myWishlist.forEach((p)=>{%>
               <tr class="table_row">
                 <td class="column-1">
@@ -75,4 +76,13 @@
     </div>
   </div>
 </div>
+<% } else{ %>
+   
+   <div class="d-flex justify-content-center" style="margin-top: 150px; margin-bottom: 150px;">
+    <h1>Wishlist is empty</h1>
+  </div>
+  
+<% } %>
+
+
 <%-include('../user/layout/user-footer-layout')-%>

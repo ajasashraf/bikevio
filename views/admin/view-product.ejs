@@ -5,6 +5,7 @@
     <div class="row ">
         <div class="col-sm-12 col-xl-12">
             <div class="bg-dark rounded h-100 p-4">
+                <div class="table-responsive">
                 <h6 class="mb-4">Products</h6>
                 <table class="table">
                     <thead>
@@ -42,8 +43,26 @@
                     </tbody>
                 </table>
             </div>
+            </div>
         </div>
-
+        <div class="container">
+            <section class="d-flex justify-content-center mt-2">
+                <% if(hasPreviousPage){ %>
+                  <a style="text-decoration: none;padding: .5rem; margin:0 1rem; color:rgb(255, 255, 255)" class="text-center"
+                    href="/admin/productview?page=<%= PreviousPage %>"><i class="fa fa-chevron-left"
+                      aria-hidden="true"></i>&nbsp; Previous</a>
+                  <% } %>
+                    <a style="text-decoration: none;padding: .5rem; margin:0 1rem; color:rgb(255, 255, 255); border: 2px solid rgb(255, 255, 255); border-radius: 50px;"
+                      href="/admin/productview?page=<%= page %>">
+                      <%= page %>
+                    </a>
+                    <% if(hasNextPage) { %>
+                      <a style="text-decoration: none;padding: .5rem; margin:0 1rem; color:rgb(255, 255, 255);"
+                        href="/admin/productview?page=<%=  page+1 %>">Next &nbsp; <i class="fa fa-chevron-right"
+                          aria-hidden="true"></i></a>
+                      <% } %>
+              </section>
+            </div>
 
     </div>
 </div>

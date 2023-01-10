@@ -107,21 +107,36 @@
 								<a href="/profilePage">Profile</a>
 							</li>
 
-
+						
 						</ul>
 					</div>
-
+				
 					<!-- Icon header -->
 					<div class="wrap-icon-header flex-w flex-r-m">
 						<!-- <div class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 js-show-modal-search">
 							<i class="zmdi zmdi-search"></i>
 						</div> -->
+						<div class="mt-3 d-flex">
+						<li class="search">
+							<form action="/search" method="post">
+								<input type="text" name="search" placeholder="search">
+								<button type="submit">search</button>
+							</form></li>
 
+							<li class="search" hidden>
+								<form action="/" method="post" hidden>
+								<div class="input-group">
+									<input type="text" placeholder="Search.." name="search">
+									<span class="input-group-btn">
+										<button class="btn btn-primary" type="submit"><i
+												class="icon-search"></i></button>
+									</span>
+								</div></form>
+							</li>
+						</div>
 						<div class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11  js-show-cart">
 							<a href="/cart"> <i class="zmdi zmdi-shopping-cart"></i></a>
 						</div>
-						
-						
 
 						<!-- <a href="#"
 							class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti"

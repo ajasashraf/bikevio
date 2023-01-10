@@ -86,11 +86,17 @@ module.exports = {
     res.redirect("/admin/categoryview");
   },
   productView: async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const items_per_page = 5;
+     const totalproducts = await product.find().countDocuments()
     let products = await product
       .find({})
       .populate("category", "name")
-      .sort({ date: -1 });
-    res.render("admin/view-product", { products, index: 1 });
+      .sort({ date: -1 }).skip((page - 1) * items_per_page).limit(items_per_page);
+    res.render("admin/view-product", { products, index: 1,page,
+      hasNextPage: items_per_page * page < totalproducts,
+      hasPreviousPage: page > 1,
+      PreviousPage: page - 1, });
   },
   addProductview: async (req, res) => {
     let categories = await category.find();

@@ -6,8 +6,6 @@ const objectId=mongoose.Types.ObjectId
 const orderSchema=new Schema({
     Address:{
         type:Object,
-       
-
     },
     userId:{
         type:String,
@@ -52,6 +50,7 @@ const orderSchema=new Schema({
         required: true,
         trim: true
       },
+     
     deliveryDate : {
       type: String,
       trim: true

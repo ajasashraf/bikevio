@@ -16,7 +16,12 @@ const couponSchema=new Schema({
         type:Boolean,
         default:false,
     },
-    created_date:Date,
-    modified_date:Date,
+    startDate : {
+        type: Date, 
+      },
+    expiryDate : {
+        type: Date,   
+      },
 })
 module.exports=coupon=mongoose.model("coupon", couponSchema);
+

@@ -13,6 +13,13 @@ const wishlistModel=require("../Model/wishlistModel");
 const Razorpay=require('razorpay');
 const { response } = require("express");
 const { default: mongoose } = require("mongoose");
+var instance = new Razorpay({
+  key_id:'rzp_test_uizcWUjK0kfQb4',
+  key_secret:'OOzYSdhYk53vstYLMn0yxucF',
+})
+const {
+  validatePaymentVerification,
+} = require('../node_modules/razorpay/dist/utils/razorpay-utils');
 
 module.exports = {
   signUP: (req, res) => {
@@ -81,6 +88,7 @@ module.exports = {
     let loggedIn = req.session.loggedIn;
     const userId = req.session.userId;
     let products = await productModel.find().limit(4);
+    
     res.render("user/user", { loggedIn, products });
 
 
@@ -138,15 +146,16 @@ module.exports = {
     const cart = await cartModel
       .findOne({ userId })
       .populate("products.productId");
+     
+ 
     if (cart) {
+      let cartlen= cart.products.length
       let itemsInCart;
       let cart_total;
       let cartId;
       let coupon_applied = false;
       if (cart != null) {
         itemsInCart = cart.products;
-        console.log(itemsInCart);
-
         cartId = cart._id;
         cart_total = cart.cartTotal;
         coupon_applied = true;
@@ -154,19 +163,22 @@ module.exports = {
           cart_total = cart.cartTotal;
         }
       }
-
       res.render("user/cart", {
         loggedIn: true,
         itemsInCart,
         cart_total,
         cartId,
+        cartlen
       });
     } else {
+      
+      console.log('dgksajdgkjanskjfg');
       res.render("user/cart", {
         loggedIn: true,
         itemsInCart: [],
         cart_total: 0,
         cartId: {},
+        cartlen:0
       });
     }
   },
@@ -191,10 +203,16 @@ module.exports = {
       .then(() => res.json({ status: true }));
   },
   userProducts: async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const items_per_page = 8;
+     const totalproducts = await productModel.find().countDocuments()
     let loggedIn = req.session.loggedIn ? true : false;
     let brand = await categoryModel.find();
-    let products = await productModel.find();
-    res.render("user/products", { loggedIn, brand, products });
+    let products = await productModel.find().sort({ date: -1 }).skip((page - 1) * items_per_page).limit(items_per_page);
+    res.render("user/products", { loggedIn, brand, products,page,
+      hasNextPage: items_per_page * page < totalproducts,
+      hasPreviousPage: page > 1,
+      PreviousPage: page - 1, });
   },
   brandFilter: async (req, res) => {
     let loggedIn = req.session.loggedIn;
@@ -226,12 +244,21 @@ module.exports = {
       .populate("products.productId")
       .exec();
     const cartDetail = cartDetails[0];
-
+  
+   let bookingAmount=address.bookingAmount
+ console.log(bookingAmount,'bookingAmountbookingAmount');
+    let applayCoupon= address.applyCoupon
+    const usedCouponlen = address.usedCoupon.length -1
+      const usedCoupon = address.usedCoupon[usedCouponlen]
+     
     res.render("user/checkout", {
       loggedIn,
       addresses: address.address,
       coupons,
       cartDetail,
+      applayCoupon,
+      bookingAmount,
+      usedCoupon
     });
   },
   newAddress: async (req, res) => {
@@ -257,18 +284,106 @@ module.exports = {
       res.redirect("/checkout");
     }
   },
-  applyCoupon: (req, res) => {
-    const userId = req.session.userId;
-    const couponId = req.query.couponId;
+  applyCoupon:async  (req, res) => {
+    try {
+      let userId = req.session.userId
+      const user = await userModel.findById(userId)
+      const CouponCode = req.body.coupon
+      const amountTotal=req.body.amountTotal
+      let total = parseInt(amountTotal)
+      let coupon = await couponModel.findOne({ name: CouponCode })
+      let date = new Date()
 
-    userHelper.applyCoupon(userId, couponId).then((response) => {
-      response.exist ? res.json({ exist: true }) : res.json(response);
-      console.log(response);
-    });
+      if (user.applyCoupon) {
+          await userModel.updateOne({_id:userId} ,{
+                  $set:{
+                      applyCoupon:false
+                  }
+              })
+          await userModel.updateOne({_id:userId} ,{
+                  $pull:{
+                      usedCoupon:{
+                          couponId:coupon._id,
+                          code:coupon.couponCode,
+                      }
+                  }
+              })
+                await userModel.updateOne({_id:userId} ,{
+                            $set:{
+                              bookingAmount:10000
+                            }
+                    })
+              res.json({removeCoupon:true})
+      } else {
+          if(CouponCode == ''){
+              res.json(false)
+          }else{
+            console.log(coupon._id,'id');
+              const existCoupon = await userModel.findOne({_id:userId,'usedCoupon.couponId':coupon._id})
+          console.log(existCoupon,"exist");
+          if (existCoupon) {
+              res.json({exist:true})
+          } else {
+              if (coupon) {
+              let percentage = coupon.discount
+              console.log(coupon.expiryDate);
+              if (coupon.startDate <= date <= coupon.expiryDate) {
+                  console.log(total);
+               
+                      discount = (total * percentage) / 100
+                      console.log(discount,'discountdiscountdiscountdiscount');
+                          let totalLast = total - discount
+                          console.log(totalLast,'totalLasttotalLasttotalLast');
+                          await cartModel.updateMany(
+                            {userId:userId},
+                            {
+                              $set: {
+                                couponDiscount:discount,
+                                
+  
+                              }
+                            }
+                          )
+                          await userModel.updateOne({_id:userId} ,{
+                            $set:{
+                              bookingAmount:totalLast
+                            }
+                    })
+                          await userModel.updateOne({_id:userId} ,{
+                                  $set:{
+                                      applyCoupon:true
+                                  }
+                          })
+                          console.log('Hii');
+                          await userModel.updateOne({_id:userId} ,{
+                              $push:{
+                                  usedCoupon:{
+                                      couponId:coupon._id,
+                                      code:coupon.name,
+                                      couponUsed:date,
+                                  }
+                              }
+                          })
+                          console.log('Hii');
+                          res.json({ success: true })
+                    
+                  
+              } else {
+                  res.json({ expired: true })
+              }
+          } else {
+              res.json({ invalid: true })
+          }
+          }
+          }
+      }
+  } catch (error) {
+      console.log(error.message);
+  }
   },
 
   orderbutton: async (req, res) => {
-    
+    console.log(req.body,'ajasa');
     let cartId = req.params.cartId;
     let loggedIn = req.session.loggedIn;
     
@@ -276,7 +391,14 @@ module.exports = {
     console.log(req.body, "body from checkout");
 
     let paymentMethod = req.body.paymentMethod;
-    let user = await userModel.findOne({ userId: userId });
+
+
+
+    let user = await userModel.findOne({ _id: userId });
+    console.log(user,'useruseruseruseruseruseruseruseruseruseruser');
+    var bookingAmount=user.bookingAmount;
+    var bookingAmount=parseInt(bookingAmount)
+    console.log(bookingAmount,'bookingAmountbookingAmountbookingAmountbookingAmountbookingAmount');
     const cart = await cartModel
       .findOne({ userId })
       .populate("products.productId");
@@ -302,26 +424,63 @@ module.exports = {
       });
       newOrder.save().then((re) => {
         console.log('response');
+
         console.log(re, "re");
         cartModel.findOneAndRemove({userId:userId}).then((re)=>{
           console.log(re,'ajajajaj');
+        res.json({cashOnDelivery:true})
+
         })
       });
-      cartModel.findOneAndRemove({userId:userId}).then((re)=>{
-        console.log(re,'ajajajaj');
-        res.render('user/orderSuccess',{loggedIn});
 
-      })
+      // cartModel.findOneAndRemove({userId:userId}).then((re)=>{
+      //   console.log(re,'ajajajaj');
+        // res.render('user/orderSuccess',{loggedIn});
+
+      // })
 
       console.log("paymentMethod==");
     }
+    else if (paymentMethod == "Razorpay") {
+      const newOrder = new orderModel({
+          userId: userId,
+          Address: userAddress,
+          vehicles: [{ vehicleId, bikeName, price, description }],
+          paymentMethod: "Razorpay",
+          paymentStatus: "Payment pending",
+          orderStatus: "Order confirmed",
+          totalAmount: price,
+        
+      });
+      await cart.remove();
+      newOrder.save().then((result) => {
+        let userOrderData = result;
+        console.log(result, "result");
+        let orderId = result._id.toString();
+
+        instance.orders.create(
+          {
+            amount: bookingAmount*100,
+            currency: "INR",
+            receipt: orderId,
+            notes: {
+              key1: "value1",
+              key2: "value2",
+            },
+          },
+          (err, order) => {
+            let response = {
+              onlinePayment: true,
+              razorpayOrderData: order,
+              userOrderData: userOrderData,
+              bookingAmount:bookingAmount
+            };
+            res.json(response);
+          }
+        );
+      });
+    }
     else{
-
-      var instance = new Razorpay({
-        key_id:'rzp_test_uizcWUjK0kfQb4',
-        key_secret:'OOzYSdhYk53vstYLMn0yxucF',
-      })
-
       var options = {
         amount: 10000 , // amount in the smallest currency unit
         currency: "INR",
@@ -337,6 +496,37 @@ module.exports = {
     let loggedIn = req.session.loggedIn;
     res.render('user/profile',{loggedIn})
 
+  },
+  doVerifyPayment:async(req,res)=>{
+    let razorpayOrderDataId = req.body['payment[razorpay_order_id]'];
+let userId=req.session.userId
+    let paymentId = req.body['payment[razorpay_payment_id]'];
+
+    let paymentSignature = req.body['payment[razorpay_signature]'];
+
+    let userOrderDataId = req.body['userOrderData[_id]'];
+
+    validate = validatePaymentVerification(
+      { order_id: razorpayOrderDataId, payment_id: paymentId },
+      paymentSignature,
+      'OOzYSdhYk53vstYLMn0yxucF'
+    );
+let user = await userModel.findOne({_id:userId})
+console.log(user,'userrrrr');
+    if (validate) {
+      let order = await orderModel.findById(userOrderDataId);
+      orderStatus = 'Order Placed';
+      paymentStatus = 'Payment Completed';
+      order.save().then((result) => {
+        res.json({ status: true });
+      });
+      console.log(user.applyCoupon,'user.applyCouponuser.applyCouponuser.applyCouponuser.applyCoupon');
+    if(user.applyCoupon){
+      await userModel.findByIdAndUpdate(userId,{applyCoupon:false,bookingAmount:10000})
+      // findByIdAndUpdate(id,{orderStatus:"cancelled"})
+    }
+    }
+   
   },
 
 
@@ -378,7 +568,6 @@ module.exports = {
     })
   }, 
   addtoWishlist: async (req, res) => {
-    console.log('ajnasssssssssssssssssss');
     try {
       let userId = req.session.userId;
       console.log(userId,'userIduserIduserId');
@@ -387,19 +576,23 @@ module.exports = {
       let ProductId = req.params.prodId;
       console.log(ProductId);
       let list = await wishlistModel.findOne({ userId: userId });
-      console.log(list, "list");
+      
       if (list) {
         let itemIndex = list.myWishlist.findIndex(
           (p) => p.ProductId == ProductId
         );
-        if (itemIndex > -1) {
-          // list.myWishlist.splice(itemIndex, 1);
-        } else {
+        console.log(itemIndex+'opopopopopoppo');
+        if (itemIndex < 0) {
           list.myWishlist.push({ ProductId, name });
+          await list.save();
+        res.json({status:true})
+        } else {
+          list.myWishlist.splice(itemIndex, 1);
+          res.json({exist:true})
         }
-        await list.save();
-        res.json({exist:true})
+        
       } else {
+
         list = new wishlistModel({
           userId: userId,
           myWishlist: [{ ProductId, name }],
@@ -416,8 +609,7 @@ module.exports = {
   },
   wishlist: async (req, res) => {
     let loggedIn = req.session.loggedIn;
-    console.log(loggedIn,'loggedIn');
-   
+
     try {
       let userId = req.session.userId;
       console.log(userId,'userIduserIduserId');
@@ -425,7 +617,7 @@ module.exports = {
         .findOne({ userId })
         .populate("myWishlist.ProductId")
         .exec();
-        console.log(wishView,'wishViewwishView');
+        let wishlen=wishView.myWishlist.length
       if (wishView) {
         req.session.wishNum = wishView.myWishlist.length;
       }
@@ -437,6 +629,7 @@ module.exports = {
         loggedIn,
         wishNum,
         wishProducts: wishView,
+        wishlen,
       });
     } catch (error) {
       console.log(error.message);
@@ -473,6 +666,7 @@ editProfilePage:async(req,res)=>{
 editProfile:(req,res)=>{
   let data = req.body
   let userId=req.session.userId
+  
   userHelpers.editUser(data,userId).then(()=>{
       res.redirect('/editProfile')
   })
@@ -490,7 +684,25 @@ resetPass:(req,res)=>{
        }
   })
  },
+ search:async (req,res)=>{
+  const searchQuery = req.body.search
+  console.log(searchQuery);
+  // const searchString = ''+searchQuery
+  // console.log(searchString);
+  const search = await productModel.find({bikeName:{ $regex: searchQuery, '$options' : 'i' }})
+  console.log(search,"searchhhhhhhhhh");
+  const category=await categoryModel.find()
+
+  console.log(search);
+  const searchlen = search.length
+    if(req.session.loggedIn){
+      res.render('user/search',{loggedIn: true, user: req.session.user, search, category, searchQuery,searchlen })
+    }else{
+      res.render('user/search',{loggedIn: false, user: req.session.user, search, category,searchQuery,searchlen })
+    }
+  
  
 
 
-};
+},
+}
