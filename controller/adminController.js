@@ -7,6 +7,7 @@ const product = require("../Model/productModel");
 const coupon = require("../Model/coupon");
 const { response } = require("express");
 const orderModal = require("../Model/orderModel");
+const userModel = require("../Model/userModel");
 
 module.exports = {
   signinView: (req, res) => {
@@ -16,7 +17,12 @@ module.exports = {
       res.render("admin/admin", { err: false });
     }
   },
-  signIn: (req, res) => {
+  signIn:async(req, res) => {
+    let currentDate = new Date();
+    let today = currentDate.getDate();
+    let month=currentDate.getMonth()
+    let year=currentDate.getFullYear()
+    let userTotal=await userModel.find()
     const admins = {
       email: "ajas@gmail.com",
       password: "1234",
@@ -26,17 +32,113 @@ module.exports = {
       req.body.password == admins.password
     ) {
       req.session.adminLogged = true;
-      userHelper.viewUser().then((userList) => {
+      userHelper.viewUser().then(async(userList) => {
         let users = userList;
-        res.render("admin/home");
+        const Todaysales = await orderModal.aggregate([
+          {
+            $match: {
+              createdAt: {
+                $gte: new Date(
+                  new Date().setHours(00, 00, 00)
+                ),
+              },
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              totalAmount: { $sum: "$totalAmount" },
+            },
+          },
+        ]);
+        const MonthlySales = await orderModal.aggregate([
+          {
+            $match: {
+              createdAt: {
+                $gte: new Date(
+                  new Date(year,month,1).setHours(00, 00, 00)
+                ),
+              },
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              totalAmount: { $sum: "$totalAmount" },
+            },
+          },
+        ]);
+        
+        const TotalSales = await orderModal.aggregate([
+          {
+            $group: {
+              _id: null,
+              totalAmount: { $sum: "$totalAmount" },
+            },
+          },
+        ]);
+       
+        res.render("admin/home",{MonthlySales,Todaysales,TotalSales,userTotal});
       });
     } else {
       res.render("admin/admin", { err: true });
     }
   },
-  homeView: (req, res) => {
+  homeView:async (req, res) => {
+    let currentDate = new Date();
+    let today = currentDate.getDate();
+    let month=currentDate.getMonth()
+    let year=currentDate.getFullYear()
+    let userTotal=await userModel.find()
+
     if (req.session.adminLogged) {
-      res.render("admin/home");
+
+      const Todaysales = await orderModal.aggregate([
+        {
+          $match: {
+            createdAt: {
+              $gte: new Date(
+                new Date().setHours(00, 00, 00)
+              ),
+            },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            totalAmount: { $sum: "$totalAmount" },
+          },
+        },
+      ]);
+  
+      const MonthlySales = await orderModal.aggregate([
+        {
+          $match: {
+            createdAt: {
+              $gte: new Date(
+                new Date(year,month,1).setHours(00, 00, 00)
+              ),
+            },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            totalAmount: { $sum: "$totalAmount" },
+          },
+        },
+      ]);
+
+      const TotalSales = await orderModal.aggregate([
+        {
+          $group: {
+            _id: null,
+            totalAmount: { $sum: "$totalAmount" },
+          },
+        },
+      ]);
+
+      res.render("admin/home",{MonthlySales,Todaysales,TotalSales,userTotal});
     } else {
       res.redirect("/admin");
     }
@@ -166,5 +268,33 @@ module.exports = {
     const order = await orderModal.find();
     res.render("admin/view-order", { order });
     
+  },
+  changeTrack: async (req, res) => {
+    try {
+      oid = req.body.oid;
+      value = req.body.value;
+
+ 
+      
+        await orderModal
+          .updateOne(
+            {
+              _id: oid,
+            },
+            {
+              $set: {
+               
+                orderStatus: value,
+              
+              },
+            }
+          )
+          .then((res) => {
+            res.json({ status: true });
+          });
+      
+    } catch (error) {
+      res.redirect('/admin')
+    }
   },
 };

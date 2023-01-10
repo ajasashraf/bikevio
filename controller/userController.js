@@ -419,7 +419,7 @@ module.exports = {
         vehicles: [{ vehicleId, bikeName, price, description }],
         paymentMethod: "cash on delivery",
         paymentStatus: "Payment pending",
-        orderStatus: "Order confirmed",
+        orderStatus: "Waiting For Confirmation",
         totalAmount: price,
       });
       newOrder.save().then((re) => {

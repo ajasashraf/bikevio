@@ -31,5 +31,6 @@ router.post('/editproduct/:id',fileUplod.uploadImages,fileUplod.resizeImages,adm
 router.post('/addcoupon',adminController.addCoupon)
 router.post('/deletecoupon/:id',adminController.deleteCoupon)
 // 
+router.post("/order-status", adminController.changeTrack);
 router.get('/admin-orders',adminController.adminOrder)
 module.exports=router;

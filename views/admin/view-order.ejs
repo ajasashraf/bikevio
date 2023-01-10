@@ -18,20 +18,46 @@
                             <th scope="col">Payment Status</th>
                             <th scope="col">Order Status</th>
                             <th scope="col">Confirmation</th>
+                            <th></th>
                         </tr>
                         
                             
                         
                     </thead>
                     <tbody>
-                       <% order.forEach(function(order){%>
+                       <% order.forEach(function(order,i){%>
                             <tr>
                                 <th scope="row"><%=order._id%></th>
                                 <td><%=order.vehicles[0].bikeName%></td>
                                 <td><%=order.totalAmount%></td>
                                 <td><%=order.paymentMethod%></td>
                                 <td><%=order.paymentStatus%></td>
-                                <td><%=order.orderStatus%></td>
+                                <!-- <td><%=order.orderStatus%></td> -->
+                                <td>
+                                    <select
+                                      style="background-color: rgb(255, 0, 0); text-size-adjust: 12px" 
+                                      id="track<%= i %>"
+                                     
+                                    >
+                                      <option value="<%= order.orderStatus %>" selected>
+                                        <%= order.orderStatus %>
+                                      </option>
+                                      <option value="Cancellede">Cancel</option>
+                                      <option value="Waiting For Confirmation">Waiting For Confirmation</option>
+                                      <option value="Order confirmed">Order confirmed</option>
+                                     
+                                    </select>
+                                  </td>
+                                  <td>
+                                    <button
+                                      type="button"
+                                      id="changetrack"
+                                      class="btn btn-primary btn-sm"
+                                      onclick="orderStatus('<%= order._id %>','<%= i %>')"
+                                    >
+                                      Change
+                                    </button>
+                                  </td>
                              
                                 
                             </tr>
@@ -47,6 +73,36 @@
 <!-- Table End -->
 
 </div>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    
+    function orderStatus(e, i) {
+      const oid = e;
+      const value = $(`#track${i}`).find(":selected").val();
+      console.log(oid, value,'lofffffffffffff');
+      //alert(`oid = ${oid}`);
+      //alert(`value = ${value}`);
+      $.ajax({
+        url: "/admin/order-status",
+        data: {
+          oid,
+          value,
+        },
+        method: "post",
+        success: (response) => {
+          if (response.status) {
+            Swal.fire({
+              position: "top-end",
+              icon: "success",
+              title: "Order satatus has been changed",
+              showConfirmButton: false,
+              timer: 1000,
+            });
+          }
+        },
+      });
+    }
+  </script>
 
 
 <!-- JavaScript Libraries -->

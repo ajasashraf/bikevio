@@ -271,7 +271,7 @@
     let userOrderData
     $("#checkout-form").submit((e) => {
       e.preventDefault();
-      console.log("vannu >>>>>>>>>>>>>>>");
+     
       $.ajax({
         url: "/orderbutton/<%= cartDetail._id %>",
         method: "post",

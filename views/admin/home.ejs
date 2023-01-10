@@ -8,7 +8,7 @@
                     <i class="fa fa-chart-line fa-3x text-primary"></i>
                     <div class="ms-3">
                         <p class="mb-2">Today Sale</p>
-                        <h6 class="mb-0">$1234</h6>
+                        <h6 class="mb-0">Rs.<%=Todaysales[0]?.totalAmount%></h6>
                     </div>
                 </div>
             </div>
@@ -16,8 +16,8 @@
                 <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
                     <i class="fa fa-chart-bar fa-3x text-primary"></i>
                     <div class="ms-3">
-                        <p class="mb-2">Total Sale</p>
-                        <h6 class="mb-0">$1234</h6>
+                        <p class="mb-2">Monthly Sale</p>
+                        <h6 class="mb-0">Rs.<%=MonthlySales[0]?.totalAmount%></h6>
                     </div>
                 </div>
             </div>
@@ -25,8 +25,8 @@
                 <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
                     <i class="fa fa-chart-area fa-3x text-primary"></i>
                     <div class="ms-3">
-                        <p class="mb-2">Today Revenue</p>
-                        <h6 class="mb-0">$1234</h6>
+                        <p class="mb-2">Total Sales</p>
+                        <h6 class="mb-0">Rs.<%=TotalSales[0]?.totalAmount%></h6>
                     </div>
                 </div>
             </div>
@@ -34,8 +34,8 @@
                 <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
                     <i class="fa fa-chart-pie fa-3x text-primary"></i>
                     <div class="ms-3">
-                        <p class="mb-2">Total Revenue</p>
-                        <h6 class="mb-0">$1234</h6>
+                        <p class="mb-2">Total Users</p>
+                        <h6 class="mb-0"><%=userTotal.length%></h6>
                     </div>
                 </div>
             </div>
