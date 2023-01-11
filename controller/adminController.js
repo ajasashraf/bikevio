@@ -265,8 +265,14 @@ module.exports = {
     res.redirect("/admin/couponView");
   },
   adminOrder: async (req, res) => {
-    const order = await orderModal.find();
-    res.render("admin/view-order", { order });
+    const page = parseInt(req.query.page) || 1;
+    const items_per_page = 10;
+    const totalproducts = await product.find().countDocuments()
+    const order = await orderModal.find().sort({ date: -1 }).skip((page - 1) * items_per_page).limit(items_per_page);;
+    res.render("admin/view-order", { order, index: 1,page,
+      hasNextPage: items_per_page * page < totalproducts,
+      hasPreviousPage: page > 1,
+      PreviousPage: page - 1, });
     
   },
   changeTrack: async (req, res) => {

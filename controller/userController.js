@@ -153,7 +153,6 @@ module.exports = {
       let itemsInCart;
       let cart_total;
       let cartId;
-      let coupon_applied = false;
       if (cart != null) {
         itemsInCart = cart.products;
         cartId = cart._id;
@@ -492,10 +491,12 @@ module.exports = {
     });
     }
   },
-  profilePage:(req,res)=>{
+  profilePage:async(req,res)=>{
     let loggedIn = req.session.loggedIn;
-    res.render('user/profile',{loggedIn})
-
+    let userId=req.session.userId
+    let userDetails =await userModel.findOne({_id:userId})
+    let userName=userDetails.name.toUpperCase()
+    res.render('user/profile',{loggedIn,userName})
   },
   doVerifyPayment:async(req,res)=>{
     let razorpayOrderDataId = req.body['payment[razorpay_order_id]'];

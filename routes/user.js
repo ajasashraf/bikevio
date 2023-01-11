@@ -22,7 +22,6 @@ router.get('/orderSummary',userController.viewOrderDetails)
 router.get('/cancelOrder',userController.cancelOrder)
 router.get('/wishlist',sessionController.userSession,userController.wishlist);
 router.get("/removeWishlist/:wishId", userController.removeWishlist);
-router.get('/profile',sessionController.userSession,userController.userProfile)
 router.get('/editProfile',sessionController.userSession,userController.editProfilePage)
 
 router.post('/signup',userController.signUP)

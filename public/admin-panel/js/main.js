@@ -65,14 +65,17 @@
 
 
     // Worldwide Sales Chart
+
+
+
     var ctx1 = $("#worldwide-sales").get(0).getContext("2d");
     var myChart1 = new Chart(ctx1, {
         type: "bar",
         data: {
-            labels: ["2016", "2017", "2018", "2019", "2020", "2021", "2022"],
+            labels: ["DUCATI", "BMW", "TRIUMPH", "KAWASAKI", "HONDA", "YAMAHA"],
             datasets: [{
-                    label: "USA",
-                    data: [15, 30, 55, 65, 60, 80, 95],
+                    label: "Bike Brand",
+                    data: [1, 3, 5, 6, 6, 8],
                     backgroundColor: "rgba(235, 22, 22, .7)"
                 },
                 

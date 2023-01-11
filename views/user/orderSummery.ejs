@@ -227,7 +227,7 @@
       </div>
     </div>
     <div class="container text-center mt-5">
-      <% if(id.orderStatus != 'Cancellede' && id.orderStatus != 'Delivered'){ %>
+      <% if(id.orderStatus != 'Cancelled' && id.orderStatus != 'Delivered'){ %>
 
       <button
         onclick="cancelOrder('<%=id._id%>')"
@@ -369,7 +369,7 @@
           Swal.fire({
             position: "top-end",
             icon: "success",
-            title: "Track statuse has been changed",
+            title: "Track status has been changed",
             showConfirmButton: false,
             timer: 1000,
           });
