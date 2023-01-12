@@ -17,7 +17,7 @@ router.get('/addproduct',sessionControl.adminSession,adminController.addProductv
 router.get('/editproduct/:id',sessionControl.adminSession,adminController.editProductpage)
 router.get('/couponView',sessionControl.adminSession,adminController. couponView)
 router.get('/addcoupon',sessionControl.adminSession,adminController.addCouponView)
-
+router.get('/salesreport',sessionControl.adminSession,adminController.salesReport)
 //post
 router.post('/login',adminController.signIn)
 router.post('/adminpanel/block/:id',adminController.blockUser)

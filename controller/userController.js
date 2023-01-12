@@ -703,7 +703,5 @@ resetPass:(req,res)=>{
     }
   
  
-
-
 },
 }

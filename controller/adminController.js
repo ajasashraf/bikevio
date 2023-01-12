@@ -303,4 +303,8 @@ module.exports = {
       res.redirect('/admin')
     }
   },
+  salesReport:async (req,res) =>{
+    let orders=await orderModal.find({orderStatus:'Order confirmed'})
+    res.render('admin/sales-report',{orders})
+  }
 };

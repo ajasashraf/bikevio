@@ -1,0 +1,70 @@
+<%-include('../admin/layout/admin-header-layout')-%>
+
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script> 
+
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap4.min.js"></script>
+
+<div class="container-fluid pt-4 px-4">
+                
+    <div class="row ">
+        <div class="col-sm-12 col-xl-12">
+            <div class="bg-dark rounded h-100 p-4">
+                <div class="table-responsive">
+                <h6 class="mb-4">Sales Report</h6>
+                <div class="table-responsive">
+                <table class="table" id="example">
+                    <thead>
+                        <tr>
+                            
+                            <th scope="col">Name</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Payment Method</th>
+                            <!-- <th scope="col">description</th>
+                            <th scope="col">Videos</th> -->
+                            <th scope="col">Date</th>
+                           
+                        </tr>    
+                    </thead>
+                    <tbody>  
+                            <% orders.forEach(function(order){%>
+                                <tr>
+                                    <th scope="row"><%=order.vehicles[0].bikeName%></th>
+                                    
+                                    <td><%=order.totalAmount%></td>
+                                    <td><%=order.paymentMethod%></td>
+                                    <td><%=order.updatedAt.toLocaleDateString()%></td>
+                                    
+                                </tr>
+                                <%})%> 
+                       
+                    </tbody>
+                </table>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+  <script>
+    $(document).ready(function() {
+    $('#example').DataTable( {
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+    } );
+} );
+</script>
+<%-include('../admin/layout/admin-footer-layout')-%>
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.print.min.js"></script>
